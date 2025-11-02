@@ -1,0 +1,35 @@
+/* Theme Configuration for Billing App */
+
+:root {
+  /* Primary Colors */
+  --color-primary: #dd9f52;
+  --color-primary-hover: #c89040;
+  --color-secondary: #dcc894;
+  --color-accent: #2c586e;
+  --color-accent-hover: #244759;
+  --color-muted: #8da1af;
+  --color-light: #bed0db;
+  --color-dark: #2b576d;
+  
+  /* UI Colors */
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+  --color-card: #ffffff;
+  --color-border: #e5e7eb;
+  --color-input: #f9fafb;
+  
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+}
+
+.dark {
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-card: #1a1a1a;
+  --color-border: #374151;
+  --color-input: #111827;
+}
+
