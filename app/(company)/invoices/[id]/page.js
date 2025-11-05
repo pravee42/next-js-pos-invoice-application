@@ -113,19 +113,23 @@ export default function InvoiceDetailPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 p-3 pb-32">
+      <div className="flex flex-col gap-2 mb-4">
         <Link href="/invoices">
-          <Button variant="ghost">
+          <Button variant="ghost" className="text-sm w-full justify-start">
             <FiArrowLeft className="w-4 h-4 mr-2" />
             Back to Invoices
           </Button>
         </Link>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           {/* Allow editing for non-cancelled invoices, including quick sales */}
           {invoice.status !== "cancelled" && (
             <>
-              <Button variant="outline" onClick={() => setShowEdit(true)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowEdit(true)}
+                className="text-sm py-2"
+              >
                 <FiEdit className="w-4 h-4 mr-2" />
                 Edit {invoice.type === "quick_sale" ? "Quick Sale" : "Invoice"}
               </Button>
@@ -133,7 +137,7 @@ export default function InvoiceDetailPage() {
                 <Button
                   variant="outline"
                   onClick={handleCancel}
-                  className="text-error border-error hover:bg-error hover:text-white"
+                  className="text-sm py-2 text-error border-error hover:bg-error hover:text-white"
                 >
                   <FiX className="w-4 h-4 mr-2" />
                   Cancel{" "}
@@ -142,7 +146,11 @@ export default function InvoiceDetailPage() {
               )}
             </>
           )}
-          <Button variant="outline" onClick={() => setShowPrint(true)}>
+          <Button
+            variant="outline"
+            onClick={() => setShowPrint(true)}
+            className="text-sm py-2"
+          >
             <FiPrinter className="w-4 h-4 mr-2" />
             Print
           </Button>
@@ -150,60 +158,58 @@ export default function InvoiceDetailPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl mb-2">
-                {invoice.invoiceNo}
-              </CardTitle>
-              <p className="text-muted">Date: {formatDate(invoice.date)}</p>
+        <CardHeader className="p-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl">{invoice.invoiceNo}</CardTitle>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${getStatusColor(
+                  invoice.status
+                )}`}
+              >
+                {invoice.status}
+              </span>
             </div>
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${getStatusColor(
-                invoice.status
-              )}`}
-            >
-              {invoice.status}
-            </span>
+            <p className="text-xs text-muted">
+              Date: {formatDate(invoice.date)}
+            </p>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <CardContent className="p-4">
+          <div className="space-y-4 mb-4">
             <div>
-              <h3 className="font-semibold mb-2">Customer Information</h3>
+              <h3 className="font-semibold text-sm mb-2">
+                Customer Information
+              </h3>
               {invoice.customerId ? (
-                <>
-                  <p className="text-muted">
-                    Customer Name: {invoice.customerId.name}
+                <div className="text-xs text-muted space-y-1">
+                  <p className="font-medium text-foreground">
+                    {invoice.customerId.name}
                   </p>
                   {invoice.customerId.email && (
-                    <p className="text-muted">
-                      Email: {invoice.customerId.email}
-                    </p>
+                    <p>{invoice.customerId.email}</p>
                   )}
                   {invoice.customerId.phone && (
-                    <p className="text-muted">
-                      Phone: {invoice.customerId.phone}
-                    </p>
+                    <p>{invoice.customerId.phone}</p>
                   )}
                   {invoice.customerId.address && (
-                    <p className="text-muted">
-                      Address: {invoice.customerId.address}
-                    </p>
+                    <p>{invoice.customerId.address}</p>
                   )}
-                </>
+                </div>
               ) : (
-                <p className="text-muted">Walk-in Customer</p>
+                <p className="text-xs text-muted">Walk-in Customer</p>
               )}
             </div>
             <div>
-              <h3 className="font-semibold mb-2">Invoice Details</h3>
-              <p className="text-muted">Type: {invoice.type || "invoice"}</p>
+              <h3 className="font-semibold text-sm mb-2">Invoice Details</h3>
+              <p className="text-xs text-muted capitalize">
+                {invoice.type || "invoice"}
+              </p>
             </div>
           </div>
 
           <div className="border-t border-border pt-4">
-            <h3 className="font-semibold mb-4">Items</h3>
+            <h3 className="font-semibold text-sm mb-3">Items</h3>
             <div className="space-y-2">
               {invoice.items?.map((item, index) => (
                 <div
@@ -211,13 +217,13 @@ export default function InvoiceDetailPage() {
                   className="flex items-center justify-between p-3 border border-border rounded-lg"
                 >
                   <div className="flex-1">
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted">
+                    <p className="font-medium text-sm">{item.name}</p>
+                    <p className="text-xs text-muted">
                       {item.qty} × {formatCurrency(item.unitPrice || 0)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">
+                    <p className="font-semibold text-sm">
                       {formatCurrency(item.total || 0)}
                     </p>
                   </div>
@@ -228,19 +234,19 @@ export default function InvoiceDetailPage() {
 
           <div className="border-t border-border pt-4 mt-4">
             <div className="space-y-2">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm">
                 <span className="text-muted">Subtotal</span>
                 <span className="font-medium">
                   {formatCurrency(invoice.subtotal || 0)}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm">
                 <span className="text-muted">Tax</span>
                 <span className="font-medium">
                   {formatCurrency(invoice.taxTotal || 0)}
                 </span>
               </div>
-              <div className="flex justify-between text-lg font-bold text-accent pt-2 border-t border-border">
+              <div className="flex justify-between text-base font-bold text-accent pt-2 border-t border-border">
                 <span>Total</span>
                 <span>{formatCurrency(invoice.totalAmount || 0)}</span>
               </div>
@@ -249,7 +255,7 @@ export default function InvoiceDetailPage() {
 
           {invoice.payments && invoice.payments.length > 0 && (
             <div className="border-t border-border pt-4 mt-4">
-              <h3 className="font-semibold mb-4">Payments</h3>
+              <h3 className="font-semibold text-sm mb-3">Payments</h3>
               <div className="space-y-2">
                 {invoice.payments.map((payment, index) => (
                   <div
@@ -257,14 +263,16 @@ export default function InvoiceDetailPage() {
                     className="flex items-center justify-between p-3 border border-border rounded-lg"
                   >
                     <div>
-                      <p className="font-medium capitalize">{payment.method}</p>
+                      <p className="font-medium text-sm capitalize">
+                        {payment.method}
+                      </p>
                       {payment.reference && (
-                        <p className="text-sm text-muted">
+                        <p className="text-xs text-muted">
                           Ref: {payment.reference}
                         </p>
                       )}
                     </div>
-                    <p className="font-semibold">
+                    <p className="font-semibold text-sm">
                       {formatCurrency(payment.amount || 0)}
                     </p>
                   </div>

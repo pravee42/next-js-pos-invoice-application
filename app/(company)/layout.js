@@ -16,7 +16,7 @@ export default function CompanyLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-light">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar onMenuClick={() => setMobileMenuOpen(true)} />
       <div className="flex">
         <Sidebar />
@@ -24,7 +24,7 @@ export default function CompanyLayout({ children }) {
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
         />
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );

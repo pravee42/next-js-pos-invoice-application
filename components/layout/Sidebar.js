@@ -41,7 +41,8 @@ export default function Sidebar() {
       <nav className="space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href === "/" && pathname === "/");
+          const isActive =
+            pathname === item.href || (item.href === "/" && pathname === "/");
           return (
             <Link
               key={item.href}
@@ -53,10 +54,12 @@ export default function Sidebar() {
                   : "text-light hover:bg-accent hover:text-white hover:shadow-md"
               )}
             >
-              <Icon className={cn(
-                "w-5 h-5 transition-transform",
-                isActive && "scale-110"
-              )} />
+              <Icon
+                className={cn(
+                  "w-5 h-5 transition-transform",
+                  isActive && "scale-110"
+                )}
+              />
               <span className="font-medium">{item.label}</span>
               {item.highlight && (
                 <span className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-75"></span>
@@ -68,4 +71,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-

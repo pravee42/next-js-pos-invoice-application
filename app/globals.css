@@ -2,19 +2,20 @@
 @import "../styles/theme.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --card: #ffffff;
-  --border: #e5e7eb;
-  --input: #f9fafb;
-  --muted: #8da1af;
-  --primary: #dd9f52;
-  --primary-hover: #c89040;
-  --secondary: #dcc894;
-  --accent: #2c586e;
-  --accent-hover: #244759;
-  --light: #bed0db;
-  --dark: #2b576d;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+  --card: #1a1a1a;
+  --card-hover: #252525;
+  --border: #374151;
+  --input: #1a1a1a;
+  --muted: #9ca3af;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #1e293b;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --light: #374151;
+  --dark: #0f172a;
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
@@ -25,6 +26,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-muted: var(--muted);
@@ -49,5 +51,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+* {
+  border-color: var(--border);
 }
 

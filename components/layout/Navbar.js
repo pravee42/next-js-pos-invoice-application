@@ -27,30 +27,30 @@ export default function Navbar({ onMenuClick }) {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-border px-4 py-3 flex items-center justify-between">
+    <nav className="bg-card shadow-sm border-b border-border px-4 py-3 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
-          className="md:hidden p-2 hover:bg-accent/10 rounded-lg"
+          className="md:hidden p-2 hover:bg-card-hover rounded-lg text-foreground"
         >
           <FiMenu className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-semibold text-accent">Billing App</h2>
+        <h2 className="text-xl font-semibold text-foreground">Menu</h2>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <Link href="/sale">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="text-foreground hover:bg-card-hover">
             <FiShoppingCart className="w-5 h-5" />
           </Button>
         </Link>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" className="text-foreground hover:bg-card-hover">
           <FiUser className="w-5 h-5" />
         </Button>
         <Button
           variant="ghost"
           onClick={handleLogout}
           disabled={isLoading}
-          className="text-error hover:text-red-700"
+          className="text-error hover:bg-error/10"
         >
           <FiLogOut className="w-5 h-5" />
         </Button>

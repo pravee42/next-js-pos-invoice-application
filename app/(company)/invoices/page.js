@@ -43,98 +43,66 @@ export default function InvoicesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-accent">Invoices</h1>
+    <div className="space-y-4 p-3">
+      <h1 className="text-2xl font-bold text-accent mb-4">Invoices</h1>
 
       {isLoading ? (
-        <div className="text-center py-12 text-muted">Loading invoices...</div>
+        <div className="text-center py-8 text-sm text-muted">Loading invoices...</div>
       ) : invoices.length === 0 ? (
-        <div className="text-center py-12 text-muted">No invoices found</div>
+        <div className="text-center py-8 text-sm text-muted">No invoices found</div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-accent/10">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Invoice No
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Amount
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Type
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-muted uppercase">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {invoices.map((invoice) => (
-                    <tr
-                      key={invoice._id}
-                      className="hover:bg-accent/5 transition-colors"
+        <div className="space-y-3">
+          {invoices.map((invoice) => (
+            <Card key={invoice._id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <Link
+                      href={`/invoices/${invoice._id}`}
+                      className="font-semibold text-base text-accent hover:underline block mb-1"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Link
-                          href={`/invoices/${invoice._id}`}
-                          className="font-medium text-accent hover:underline"
-                        >
-                          {invoice.invoiceNo}
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-muted">
-                        {formatDate(invoice.date)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold">
-                        {formatCurrency(invoice.totalAmount || 0)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`capitalize ${getStatusColor(invoice.status)}`}>
-                          {invoice.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-muted capitalize">
-                        {invoice.type || "invoice"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Link
-                          href={`/invoices/${invoice._id}`}
-                          className="text-accent hover:underline text-sm"
-                        >
-                          View
-                        </Link>
-                        {invoice.status !== "paid" &&
-                          invoice.status !== "cancelled" && (
-                            <>
-                              <span className="mx-2 text-muted">|</span>
-                              <button
-                                onClick={() => {
-                                  setSelectedInvoice(invoice);
-                                  setShowEdit(true);
-                                }}
-                                className="text-accent hover:underline text-sm"
-                              >
-                                Edit
-                              </button>
-                            </>
-                          )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                      {invoice.invoiceNo}
+                    </Link>
+                    <p className="text-xs text-muted mb-2">{formatDate(invoice.date)}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`text-xs capitalize ${getStatusColor(invoice.status)}`}>
+                        {invoice.status}
+                      </span>
+                      <span className="text-xs text-muted capitalize">
+                        • {invoice.type || "invoice"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-base mb-2">
+                      {formatCurrency(invoice.totalAmount || 0)}
+                    </p>
+                    <div className="flex flex-col gap-1">
+                      <Link
+                        href={`/invoices/${invoice._id}`}
+                        className="text-xs text-accent hover:underline"
+                      >
+                        View
+                      </Link>
+                      {invoice.status !== "paid" &&
+                        invoice.status !== "cancelled" && (
+                          <button
+                            onClick={() => {
+                              setSelectedInvoice(invoice);
+                              setShowEdit(true);
+                            }}
+                            className="text-xs text-accent hover:underline"
+                          >
+                            Edit
+                          </button>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
 
       {/* Edit Invoice Modal */}

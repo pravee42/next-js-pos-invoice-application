@@ -57,63 +57,63 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-accent">Dashboard</h1>
+    <div className="space-y-4 p-3">
+      <h1 className="text-2xl font-bold text-accent mb-4">Dashboard</h1>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted mb-1">Total Products</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-xs text-muted mb-1">Products</p>
+                <p className="text-xl font-bold text-accent">
                   {stats.totalProducts}
                 </p>
               </div>
-              <FiPackage className="w-8 h-8 text-primary" />
+              <FiPackage className="w-6 h-6 text-primary" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted mb-1">Total Customers</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-xs text-muted mb-1">Customers</p>
+                <p className="text-xl font-bold text-accent">
                   {stats.totalCustomers}
                 </p>
               </div>
-              <FiUsers className="w-8 h-8 text-primary" />
+              <FiUsers className="w-6 h-6 text-primary" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted mb-1">Total Invoices</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-xs text-muted mb-1">Invoices</p>
+                <p className="text-xl font-bold text-accent">
                   {stats.totalInvoices}
                 </p>
               </div>
-              <FiFileText className="w-8 h-8 text-primary" />
+              <FiFileText className="w-6 h-6 text-primary" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted mb-1">Total Revenue</p>
-                <p className="text-2xl font-bold text-accent">
+                <p className="text-xs text-muted mb-1">Revenue</p>
+                <p className="text-lg font-bold text-accent">
                   {formatCurrency(stats.totalRevenue)}
                 </p>
               </div>
-              <FiDollarSign className="w-8 h-8 text-primary" />
+              <FiDollarSign className="w-6 h-6 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -121,27 +121,27 @@ export default function Dashboard() {
 
       {/* Recent Invoices */}
       <Card>
-        <CardHeader>
-          <CardTitle>Recent Invoices</CardTitle>
+        <CardHeader className="p-4">
+          <CardTitle className="text-base">Recent Invoices</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           {stats.recentInvoices.length === 0 ? (
-            <div className="text-center py-8 text-muted">No recent invoices</div>
+            <div className="text-center py-6 text-sm text-muted">No recent invoices</div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {stats.recentInvoices.map((invoice) => (
                 <div
                   key={invoice._id}
-                  className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/5 transition-colors"
+                  className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-accent/5 transition-colors"
                 >
                   <div>
-                    <p className="font-medium">{invoice.invoiceNo}</p>
-                    <p className="text-sm text-muted">
+                    <p className="font-medium text-sm">{invoice.invoiceNo}</p>
+                    <p className="text-xs text-muted">
                       {formatDate(invoice.date)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-accent">
+                    <p className="font-semibold text-sm text-accent">
                       {formatCurrency(invoice.totalAmount || 0)}
                     </p>
                     <p className="text-xs text-muted capitalize">

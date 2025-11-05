@@ -71,99 +71,71 @@ export default function EmployeesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-accent">Employees</h1>
+    <div className="space-y-4 p-3">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-accent">Employees</h1>
         <Button onClick={() => {
           setSelectedUser(null);
           setShowForm(true);
-        }}>
-          <FiPlus className="w-4 h-4 mr-2" />
-          Add Employee
+        }} className="text-sm px-3 py-2">
+          <FiPlus className="w-4 h-4 mr-1" />
+          Add
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12 text-muted">Loading employees...</div>
+        <div className="text-center py-8 text-sm text-muted">Loading employees...</div>
       ) : users.length === 0 ? (
-        <div className="text-center py-12 text-muted">No employees found</div>
+        <div className="text-center py-8 text-sm text-muted">No employees found</div>
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-accent/10">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-muted uppercase">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-accent/5 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap font-medium">
-                        {user.name || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-muted">
-                        {user.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 py-1 text-xs rounded-lg bg-primary/10 text-primary capitalize">
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-lg capitalize ${
-                            user.isActive
-                              ? "bg-success/10 text-success"
-                              : "bg-error/10 text-error"
-                          }`}
-                        >
-                          {user.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(user)}
-                          >
-                            <FiEdit className="w-4 h-4" />
-                          </Button>
-                          {user.role !== "owner" && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDelete(user._id)}
-                              className="text-error hover:text-error"
-                            >
-                              <FiTrash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-3">
+          {users.map((user) => (
+            <Card key={user._id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-base mb-1">{user.name || "N/A"}</h3>
+                    <p className="text-xs text-muted mb-2">{user.email}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="px-2 py-0.5 text-xs rounded bg-primary/10 text-primary capitalize">
+                        {user.role}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 text-xs rounded capitalize ${
+                          user.isActive
+                            ? "bg-success/10 text-success"
+                            : "bg-error/10 text-error"
+                        }`}
+                      >
+                        {user.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(user)}
+                      className="h-8 w-8"
+                    >
+                      <FiEdit className="w-4 h-4" />
+                    </Button>
+                    {user.role !== "owner" && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(user._id)}
+                        className="h-8 w-8 text-error hover:text-error"
+                      >
+                        <FiTrash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
 
       <EmployeeForm

@@ -14,18 +14,18 @@ export default function SaleSummary({
   const { subtotal, tax, total } = calculateTotal(cart, 18);
 
   return (
-    <div className="border-t border-border pt-4 mt-4">
-      <div className="space-y-2 mb-4">
-        <div className="flex justify-between text-sm">
+    <div className="border-t border-border pt-3 mt-2">
+      <div className="space-y-1.5 mb-3">
+        <div className="flex justify-between text-xs">
           <span className="text-muted">Subtotal</span>
-          <span className="font-medium">{formatCurrency(subtotal)}</span>
+          <span className="font-medium text-sm">{formatCurrency(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-xs">
           <span className="text-muted">Tax</span>
-          <span className="font-medium">{formatCurrency(tax)}</span>
+          <span className="font-medium text-sm">{formatCurrency(tax)}</span>
         </div>
-        <div className="flex justify-between text-lg font-bold text-accent pt-2 border-t border-border">
-          <span>Total</span>
+        <div className="flex justify-between text-base font-bold text-foreground pt-1.5 border-t border-border">
+          <span>Grand Total</span>
           <span>{formatCurrency(total)}</span>
         </div>
       </div>
@@ -34,20 +34,20 @@ export default function SaleSummary({
         {cart.length > 0 && onSaveDraft && (
           <Button
             variant="outline"
-            className="w-full rounded-xl py-2.5"
+            className="w-full rounded-lg py-2 text-xs"
             onClick={onSaveDraft}
             disabled={isLoading}
           >
-            <FiSave className="w-4 h-4 mr-2" />
-            Save as Draft
+            <FiSave className="w-3 h-3 mr-1" />
+            Save Draft
           </Button>
         )}
         <Button
-          className="w-full bg-primary hover:bg-primary-hover text-white rounded-xl py-3"
+          className="w-full bg-primary hover:bg-primary-hover text-white rounded-lg py-2.5 text-sm font-semibold"
           onClick={onCheckout}
           disabled={cart.length === 0 || isLoading}
         >
-          {isLoading ? "Processing..." : "Create Invoice"}
+          {isLoading ? "Processing..." : "Proceed to Payment"}
         </Button>
       </div>
     </div>

@@ -18,50 +18,41 @@ export default function ProductCard({ product, onAdd }) {
       }`}
       onClick={() => !isOutOfStock && onAdd(product)}
     >
-      <CardContent className="p-4">
+      <CardContent className="p-3 relative">
         <div
-          className={`aspect-square bg-gradient-to-br from-light to-secondary rounded-xl mb-3 flex items-center justify-center relative ${
+          className={`aspect-square bg-card-hover rounded-lg mb-2 flex items-center justify-center relative ${
             isOutOfStock ? "opacity-50" : ""
           }`}
         >
-          <FiPackage className="w-12 h-12 text-accent" />
+          <FiPackage className="w-8 h-8 text-muted" />
           {isLowStock && !isOutOfStock && (
-            <span className="absolute top-2 right-2 px-2 py-1 text-xs font-semibold bg-warning text-white rounded-full">
+            <span className="absolute top-1 right-1 px-1.5 py-0.5 text-xs font-semibold bg-warning text-white rounded-full">
               Low
             </span>
           )}
           {isOutOfStock && (
             <span className="absolute inset-0 flex items-center justify-center">
-              <span className="px-3 py-1 text-xs font-semibold bg-error text-white rounded-full">
-                Out of Stock
+              <span className="px-2 py-0.5 text-xs font-semibold bg-error text-white rounded-full">
+                Out
               </span>
             </span>
           )}
         </div>
-        <h3 className="font-semibold text-foreground mb-1 line-clamp-2 min-h-[2.5rem]">
+        <h3 className="font-medium text-sm text-foreground mb-1 line-clamp-2 min-h-[2rem]">
           {product.name}
         </h3>
-        <p className="text-xs text-muted mb-2">
-          {product.sku ? `SKU: ${product.sku}` : "No SKU"}
+        <p className="text-sm text-foreground mb-2">
+          {formatCurrency(product.price || 0)}
         </p>
-        <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-accent">
-            {formatCurrency(product.price || 0)}
-          </span>
-          {product.currentStock !== undefined && (
-            <span
-              className={`text-xs font-medium px-2 py-1 rounded-full ${
-                isOutOfStock
-                  ? "bg-error/10 text-error"
-                  : isLowStock
-                  ? "bg-warning/10 text-warning"
-                  : "bg-success/10 text-success"
-              }`}
-            >
-              {product.currentStock} in stock
-            </span>
-          )}
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isOutOfStock) onAdd(product);
+          }}
+          className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-[#10b981] text-white flex items-center justify-center hover:bg-[#059669] transition-colors text-lg font-bold shadow-md"
+        >
+          +
+        </button>
       </CardContent>
     </Card>
   );

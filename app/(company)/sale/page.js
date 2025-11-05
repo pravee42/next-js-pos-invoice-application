@@ -21,6 +21,8 @@ import {
   FiCheck,
   FiFileText,
   FiPackage,
+  FiMenu,
+  FiArrowLeft,
 } from "react-icons/fi";
 import { formatCurrency } from "../../../lib/utils";
 import { saveDraft, getDrafts } from "../../../lib/draftStorage";
@@ -33,15 +35,16 @@ export default function SalePage() {
   const [search, setSearch] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showCustomerSelector, setShowCustomerSelector] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showDraftManager, setShowDraftManager] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [draftCount, setDraftCount] = useState(0);
 
   useEffect(() => {
     updateDraftCount();
-    // Initial load will happen via the debounced effect when search changes
   }, []);
 
   const updateDraftCount = () => {
@@ -83,12 +86,17 @@ export default function SalePage() {
   };
 
   const handleLoadDraft = (draft) => {
-    if (draft.cart && draft.cart.length > 0) {
-      setCart(draft.cart);
+    const items = draft.cart || draft.items || [];
+    if (items.length > 0) {
+      setCart(items);
       if (draft.customer) {
         setSelectedCustomer(draft.customer);
       }
-      alert("Draft loaded successfully!");
+      setShowDraftManager(false);
+      // Show cart modal after loading
+      setTimeout(() => setShowCartModal(true), 300);
+    } else {
+      alert("This draft has no items.");
     }
   };
 
@@ -121,12 +129,13 @@ export default function SalePage() {
     }
   }, []);
 
-  const filteredProducts = products.filter(
-    (p) =>
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch =
       p.name?.toLowerCase().includes(search.toLowerCase()) ||
       p.sku?.toLowerCase().includes(search.toLowerCase()) ||
-      p.barcode?.toLowerCase().includes(search.toLowerCase())
-  );
+      p.barcode?.toLowerCase().includes(search.toLowerCase());
+    return matchesSearch;
+  });
 
   const addToCart = (product) => {
     setCart((prev) => {
@@ -157,7 +166,8 @@ export default function SalePage() {
       alert("Cart is empty. Add products to create an invoice.");
       return;
     }
-    // Allow checkout without customer (for quick sale)
+    // Close cart modal and show payment modal
+    setShowCartModal(false);
     setShowPaymentModal(true);
   };
 
@@ -178,22 +188,13 @@ export default function SalePage() {
         discount: 0,
       }));
 
-      let data;
-      if (payment.skipPayment) {
-        // Create draft invoice without payment
-        data = await apiClient.createInvoice({
-          type: "invoice",
-          customerId: selectedCustomer?._id || null,
-          items: invoiceItems,
-          payments: [],
-          paymentStatus: "draft",
-        });
-      } else if (selectedCustomer) {
-        // Create invoice with customer (support multiple payments)
-        const { total } = calculateTotal(cart, 18);
-        const payments = payment.payments || (payment.amount ? [payment] : []);
-        const totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+      const payments = payment.payments || [];
+      const totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+      const { total } = calculateTotal(cart, 18);
 
+      let data;
+      if (selectedCustomer) {
+        // Create invoice with customer
         data = await apiClient.createInvoice({
           type: "invoice",
           customerId: selectedCustomer._id,
@@ -207,8 +208,7 @@ export default function SalePage() {
               : "issued",
         });
       } else {
-        // Quick sale without customer (support multiple payments)
-        const payments = payment.payments || (payment.amount ? [payment] : []);
+        // Quick sale without customer
         data = await apiClient.createQuickSale({
           items: invoiceItems,
           payments: payments,
@@ -219,6 +219,7 @@ export default function SalePage() {
         // Reset cart and clear any related drafts
         setCart([]);
         setSelectedCustomer(null);
+        setShowCartModal(false);
         setShowPaymentModal(false);
         updateDraftCount();
 
@@ -236,145 +237,209 @@ export default function SalePage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-light via-white to-light p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-accent mb-2">
-              Point of Sale
-            </h1>
-            <p className="text-muted">Quick sale and invoice generation</p>
-          </div>
-          {draftCount > 0 && (
-            <Button
-              variant="outline"
-              onClick={() => setShowDraftManager(true)}
-              className="flex items-center gap-2"
-            >
-              <FiFileText className="w-4 h-4" />
-              Drafts ({draftCount})
-            </Button>
-          )}
-        </div>
+  const cartTotal = calculateTotal(cart, 18).total;
+  const cartItemCount = cart.length;
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Products Section */}
-          <div className="flex-1">
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
-                <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+  return (
+    <div className="min-h-screen bg-background text-foreground pb-[80px]">
+      {/* Top Title - Product Catalog */}
+      <div className="px-4 pt-4 pb-2">
+        <h1 className="text-xs text-muted font-normal">Product Catalog</h1>
+      </div>
+
+      {/* Header Bar with Menu */}
+      <div className="bg-card px-4 py-3 flex items-center justify-between">
+        {draftCount > 0 && (
+          <button
+            onClick={() => setShowDraftManager(true)}
+            className="relative text-foreground"
+          >
+            <FiFileText className="w-5 h-5" />
+            {draftCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-xs rounded-full flex items-center justify-center font-bold">
+                {draftCount}
+              </span>
+            )}
+          </button>
+        )}
+        <button
+          onClick={() => setShowSearchModal(true)}
+          className="text-foreground flex items-center gap-2"
+        >
+          <FiSearch className="w-5 h-5" /> Search Products
+        </button>
+      </div>
+
+      {/* Search Modal */}
+      {showSearchModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-20"
+          onClick={() => setShowSearchModal(false)}
+        >
+          <div
+            className="bg-card rounded-xl shadow-lg w-full max-w-md mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center gap-3">
+                <FiSearch className="w-5 h-5 text-muted" />
                 <Input
                   type="text"
                   placeholder="Search products by name, SKU, or barcode..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-12 h-12 text-lg rounded-xl border-2 border-border focus:border-primary"
+                  className="flex-1 bg-input border-border text-foreground"
+                  autoFocus
                 />
+                <button
+                  onClick={() => setShowSearchModal(false)}
+                  className="text-foreground hover:text-muted"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
               </div>
-              <p className="text-xs text-muted mt-2">
-                {filteredProducts.length} products found
-              </p>
+            </div>
+            <div className="max-h-96 overflow-y-auto p-4">
+              {filteredProducts.length === 0 ? (
+                <div className="text-center py-8">
+                  <FiPackage className="w-12 h-12 text-muted mx-auto mb-2 opacity-50" />
+                  <p className="text-sm text-muted">No products found</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredProducts.map((product) => (
+                    <button
+                      key={product._id}
+                      onClick={() => {
+                        addToCart(product);
+                        setShowSearchModal(false);
+                      }}
+                      className="w-full p-3 bg-card-hover rounded-lg hover:bg-card border border-border text-left flex items-center justify-between"
+                    >
+                      <div className="flex-1">
+                        <h3 className="font-medium text-sm text-foreground mb-1">
+                          {product.name}
+                        </h3>
+                        <p className="text-xs text-muted">
+                          {product.sku && `SKU: ${product.sku} • `}
+                          {formatCurrency(product.price || 0)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product);
+                          setShowSearchModal(false);
+                        }}
+                        className="w-8 h-8 rounded-full bg-[#10b981] text-white flex items-center justify-center hover:bg-[#059669] transition-colors text-lg font-bold"
+                      >
+                        +
+                      </button>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Products Grid */}
+      <div className="px-4 py-4">
+        {isLoadingProducts ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
+            <p className="text-sm text-muted">Loading products...</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <FiPackage className="w-12 h-12 text-muted mx-auto mb-2" />
+            <p className="text-sm text-muted">No products found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onAdd={addToCart}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Cart Footer - Fixed Bottom */}
+      {cartItemCount > 0 && (
+        <div
+          className="fixed bottom-0 left-0 right-0 bg-[#10b981] text-white px-4 py-3 rounded-t-xl shadow-lg z-50 flex items-center justify-between cursor-pointer"
+          onClick={() => setShowCartModal(true)}
+        >
+          <div className="flex items-center gap-3">
+            <FiShoppingCart className="w-5 h-5" />
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">
+                Cart: {cartItemCount} {cartItemCount === 1 ? "item" : "items"}
+              </span>
+              <span className="text-sm font-medium">•</span>
+              <span className="text-sm font-semibold">
+                {formatCurrency(cartTotal)}
+              </span>
+            </div>
+          </div>
+          <button className="text-white hover:opacity-80">
+            <FiCheck className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+
+      {/* Cart Modal/Drawer - Order Summary */}
+      {showCartModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex flex-col"
+          onClick={() => setShowCartModal(false)}
+        >
+          <div
+            className="bg-card mt-auto rounded-t-xl max-h-[80vh] flex flex-col p-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Order Summary Header */}
+            <div className="px-4 py-3 border-b border-border flex items-center gap-4">
+              <button
+                onClick={() => setShowCartModal(false)}
+                className="text-foreground"
+              >
+                <FiArrowLeft className="w-5 h-5" />
+              </button>
+              <h2 className="text-base font-semibold text-foreground flex-1">
+                Order Summary
+              </h2>
             </div>
 
-            {/* Products Grid */}
-            {isLoadingProducts ? (
-              <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-                <p className="text-muted">Loading products...</p>
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="text-center py-20">
-                <FiPackage className="w-16 h-16 text-muted mx-auto mb-4" />
-                <p className="text-lg text-muted">No products found</p>
-                <p className="text-sm text-muted mt-2">
-                  Try a different search term
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-warp flex-row gap-4">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product._id}
-                    product={product}
-                    onAdd={addToCart}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Cart Sidebar */}
-          <div className="lg:w-96 xl:w-[420px]">
-            <Card className="sticky top-6 h-[calc(100vh-3rem)] flex flex-col shadow-xl border-2 border-border">
-              <div className="p-6 border-b border-border bg-gradient-to-r from-accent to-dark text-white rounded-t-xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <FiShoppingCart className="w-5 h-5" />
-                    <h2 className="text-xl font-bold">Cart</h2>
-                  </div>
-                  {cart.length > 0 && (
-                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-semibold">
-                      {cart.length} {cart.length === 1 ? "item" : "items"}
-                    </span>
-                  )}
+            {/* Cart Items */}
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              {cart.length === 0 ? (
+                <div className="text-center py-8">
+                  <FiShoppingCart className="w-10 h-10 text-muted mx-auto mb-2 opacity-50" />
+                  <p className="text-sm text-muted">Cart is empty</p>
                 </div>
+              ) : (
+                <div className="space-y-3">
+                  {cart.map((item) => (
+                    <CartItem
+                      key={item._id}
+                      item={item}
+                      onQtyChange={updateQty}
+                      onRemove={removeFromCart}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
 
-                {/* Customer Selection */}
-                {selectedCustomer ? (
-                  <div className="flex items-center gap-2 bg-white/10 p-2 rounded-lg">
-                    <FiUser className="w-4 h-4" />
-                    <span className="text-sm truncate flex-1">
-                      {selectedCustomer.name}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSelectedCustomer(null)}
-                      className="h-6 w-6 text-white hover:bg-white/20"
-                    >
-                      <FiX className="w-3 h-3" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={() => setShowCustomerSelector(true)}
-                    className="w-full bg-white/20 hover:bg-white/30 text-white border-0"
-                  >
-                    <FiUser className="w-4 h-4 mr-2" />
-                    Select Customer (Optional)
-                  </Button>
-                )}
-              </div>
-
-              {/* Cart Items */}
-              <div className="flex-1 overflow-y-auto p-4 bg-white">
-                {cart.length === 0 ? (
-                  <div className="text-center py-12">
-                    <FiShoppingCart className="w-16 h-16 text-muted mx-auto mb-4 opacity-50" />
-                    <p className="text-muted font-medium">Cart is empty</p>
-                    <p className="text-sm text-muted mt-2">
-                      Add products to get started
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {cart.map((item) => (
-                      <CartItem
-                        key={item._id}
-                        item={item}
-                        onQtyChange={updateQty}
-                        onRemove={removeFromCart}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Summary */}
-              <div className="p-4 border-t border-border bg-gradient-to-br from-white to-light/30">
+            {/* Summary and Checkout */}
+            {cart.length > 0 && (
+              <div className="border-t border-border bg-card">
                 <SaleSummary
                   cart={cart}
                   onCheckout={handleCheckout}
@@ -383,10 +448,10 @@ export default function SalePage() {
                   isLoading={isLoading}
                 />
               </div>
-            </Card>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Customer Selector Modal */}
       {showCustomerSelector && (
@@ -397,11 +462,14 @@ export default function SalePage() {
       )}
 
       {/* Payment Modal - Using MultiPaymentModal for multiple payments */}
-      {showPaymentModal && (
+      {showPaymentModal && cart.length > 0 && !showCartModal && (
         <MultiPaymentModal
           cart={cart}
           isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
+          onClose={() => {
+            setShowPaymentModal(false);
+            setShowCartModal(true); // Return to cart modal
+          }}
           onConfirm={handlePaymentConfirm}
           isLoading={isLoading}
         />

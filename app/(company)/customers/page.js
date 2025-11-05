@@ -81,67 +81,67 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-accent">Customers</h1>
+    <div className="space-y-4 p-3">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-accent">Customers</h1>
         <Button onClick={() => {
           setSelectedCustomer(null);
           setShowForm(true);
-        }}>
-          <FiPlus className="w-4 h-4 mr-2" />
-          Add Customer
+        }} className="text-sm px-3 py-2">
+          <FiPlus className="w-4 h-4 mr-1" />
+          Add
         </Button>
       </div>
 
       <div className="relative">
-        <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
+        <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-4 h-4" />
         <Input
           type="text"
           placeholder="Search customers..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
+          className="pl-10 h-10 text-sm"
         />
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12 text-muted">Loading customers...</div>
+        <div className="text-center py-8 text-sm text-muted">Loading customers...</div>
       ) : customers.length === 0 ? (
-        <div className="text-center py-12 text-muted">No customers found</div>
+        <div className="text-center py-8 text-sm text-muted">No customers found</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-3">
           {customers.map((customer) => (
             <Card key={customer._id}>
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-semibold text-lg mb-1">{customer.name}</h3>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-base mb-1">{customer.name}</h3>
                     {customer.phone && (
-                      <p className="text-sm text-muted">{customer.phone}</p>
+                      <p className="text-xs text-muted mb-1">{customer.phone}</p>
                     )}
                     {customer.email && (
-                      <p className="text-sm text-muted">{customer.email}</p>
+                      <p className="text-xs text-muted">{customer.email}</p>
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(customer)}>
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(customer)} className="h-8 w-8">
                       <FiEdit className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDelete(customer._id)}
-                      className="text-error hover:text-error"
+                      className="h-8 w-8 text-error hover:text-error"
                     >
                       <FiTrash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
                 {customer.balance !== undefined && (
-                  <div className="pt-4 border-t border-border">
+                  <div className="pt-3 border-t border-border">
                     <div className="flex justify-between">
-                      <span className="text-muted">Balance</span>
-                      <span className="font-semibold text-accent">
+                      <span className="text-xs text-muted">Balance</span>
+                      <span className="font-semibold text-sm text-accent">
                         {formatCurrency(customer.balance || 0)}
                       </span>
                     </div>
